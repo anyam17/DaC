@@ -26,6 +26,8 @@ jobs:
             git branch -m main
             git checkout -b main
             git remote add origin https://github.com/SamsonIdowu/DaaC.git || true
+            git fetch origin || true
+            git reset --hard origin/main || true
             git pull origin main
             chown wazuh:wazuh /var/ossec/etc/decoders/* && chmod 660 /var/ossec/etc/decoders/*
             chown wazuh:wazuh /var/ossec/etc/rules/* && chmod 660 /var/ossec/etc/rules/*

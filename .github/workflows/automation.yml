@@ -19,11 +19,13 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            sudo su
+            sudo su root
             cd /var/ossec/etc/
             git config --global --add safe.directory /var/ossec/etc || true
             git init || true
-            git remote add origin ${{ github.repository }} || true
+            git branch -m main
+            git checkout -b main
+            git remote add origin ${{ REPO }} || true
             git pull origin main
             chown wazuh:wazuh /var/ossec/etc/decoders/* && chmod 660 /var/ossec/etc/decoders/*
             chown wazuh:wazuh /var/ossec/etc/rules/* && chmod 660 /var/ossec/etc/rules/*

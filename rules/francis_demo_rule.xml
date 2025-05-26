@@ -29,7 +29,6 @@
     <field name="win.eventdata.CommandLine" type="pcre2">Expand-Archive</field>
     <field name="win.eventdata.CommandLine" type="pcre2">\-DestinationPath</field>
     <field name="win.eventdata.CommandLine" type="pcre2">DXJS.zip</field>
-    <field name="win.eventdata.CommandLine" type="pcre2">\-Force</field>
     <description>Possible PureHVNC malware activity: Suspicious ZIP file DXJS.zip extracted.</description>
     <mitre>
       <id>T1059.001</id>

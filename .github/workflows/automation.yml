@@ -1,0 +1,32 @@
+name: CI
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+
+  DaaC:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apply modified or new decoder and rule file(s) to SIEM
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            sudo su
+            cd /var/ossec/etc/
+            git config --global --add safe.directory /var/ossec/etc || true
+            git init || true
+            git remote add origin ${{ github.repository }} || true
+            git pull origin main
+            chown wazuh:wazuh /var/ossec/etc/decoders/* && chmod 660 /var/ossec/etc/decoders/*
+            chown wazuh:wazuh /var/ossec/etc/rules/* && chmod 660 /var/ossec/etc/rules/*
+            sudo systemctl restart wazuh-manager \
+            && echo "Ruleset apply SUCCESS!!! - Wazuh manager restarted successfully." \
+            || echo "Ruleset apply FAILURE!!! - Wazuh manager failed to restart, check ruleset for error..."

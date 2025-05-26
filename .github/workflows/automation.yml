@@ -25,7 +25,7 @@ jobs:
             git init || true
             git branch -m main
             git checkout -b main
-            git remote add origin ${{ github.repository }} || true
+            git remote add origin ${{ REPO }} || true
             git pull origin main
             chown wazuh:wazuh /var/ossec/etc/decoders/* && chmod 660 /var/ossec/etc/decoders/*
             chown wazuh:wazuh /var/ossec/etc/rules/* && chmod 660 /var/ossec/etc/rules/*

@@ -46,15 +46,16 @@ git remote add origin <REMOTE_REPOSITORY>
 git config --global user.name <YOUR_NAME>
 git config --global user.email <YOUR_EMAIL_ADDRESS>
 ```
-7. Stage the files for commit in your local Git. Create a new branch `main` and switch to the new branch. Make an initial commit to your local Git repository:
+7. Create a new branch `main` and switch to the new branch. Stage the files for commit in your local Git.  Make an initial commit to your local Git repository:
 ```
-git add .
 git checkout -b main
+git add .
 git commit -m "Initial commit"
 ```
 8. Push the changes from your local Git repository to the `main` branch of remote repository:
 ```
-git push -u origin main --force
+git pull origin main --no-rebase   # Merge remote repo with local repo and resolve any merge conflicts manually if they appear.
+git push -u origin main
 ```
 
 ### GitHub (Remote Repository)

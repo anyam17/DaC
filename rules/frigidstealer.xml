@@ -45,16 +45,4 @@
     </mitre>
   </rule>
 
-<!-- Persistence -->
-  <rule id="100105" level="11">
-    <decoded_as>macOS_launchservicesd</decoded_as>
-    <match type="pcre2">(?i)(?i)"LSBundlePath"="(.*Safari Updater.app)"</match>
-    <field name="application_type" type="pcre2">Foreground</field>
-    <field name="bundle_id" type="pcre2">com.wails.ddaolimaki-daunito</field>
-    <description>Possible FrigidStealer malware running in $(application_type)</description>
-    <mitre>
-      <id>T1541</id>
-    </mitre>
-  </rule>
-
 </group>

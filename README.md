@@ -1,4 +1,4 @@
-# DaaC: Detection-Engineering as Code
+# DaC: Detection-Engineering as Code
 
 This repository is used to conceptualize the automation of detection engineering, in a way that the integration of rulesets such as: decoders and rules to SIEM tools are automated. This approach to detection engineering allows for faster and effective collaboration among security engineers. It also limits access to the SIEM endpoint and reduces collaboration errors in production environments.
 

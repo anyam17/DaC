@@ -12,7 +12,7 @@ Ensure that the following requirements are met to use this repository with ease:
 * Ensure that the SIEM host is accessible on the internet by assigning a public IP or NAT if behind a firewall.
 * Ensure that port `22` or your custom SSH port is open on the public IP address.
 * Ensure that the SIEM host is provisioned with a public/private key pair, to allow for SSH login.
-* Clone the parent [DaaC](https://github.com/SamsonIdowu/DaC.git) repository to use its GitHub Actions workflow file.
+* Clone the parent [DaC](https://github.com/SamsonIdowu/DaC.git) repository to use its GitHub Actions workflow file.
 
 
 ## Configuration

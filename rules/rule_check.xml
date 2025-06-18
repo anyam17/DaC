@@ -14,7 +14,7 @@
   </rule>
 
 <!-- Process termination -->
-  <rule id="100104" level="11">
+  <rule id="100114" level="11">
     <match type="pcre2">(?i)Removed job for.*ddaolimaki.*</match>
     <description>FrigidStealer malware process terminated after data exfiltration.</description>
     <mitre>
@@ -23,7 +23,7 @@
   </rule>
 
 <!-- Persistence -->
-  <rule id="100105" level="11">
+  <rule id="100115" level="11">
     <decoded_as>macOS_launchservicesd</decoded_as>
     <match type="pcre2">(?i)(?i)"LSBundlePath"="(.*Safari Updater.app)"</match>
     <field name="application_type" type="pcre2">Foreground</field>

@@ -1,9 +1,27 @@
+import subprocess
 import xml.etree.ElementTree as ET
 from pathlib import Path
-import subprocess
 import sys
 
-def extract_rule_ids_from_file(content):
+def get_changed_rule_files():
+    """Get a list of changed or added rule files in the PR."""
+    try:
+        result = subprocess.run(
+            ["git", "diff", "--name-only", "origin/main...HEAD"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        changed_files = [
+            Path(f.strip()) for f in result.stdout.splitlines()
+            if f.startswith("rules/") and f.endswith(".xml")
+        ]
+        return changed_files
+    except subprocess.CalledProcessError as e:
+        print("❌ Failed to get changed files:", e)
+        sys.exit(1)
+
+def extract_rule_ids_from_xml(content):
     ids = set()
     try:
         root = ET.fromstring(content)
@@ -15,31 +33,51 @@ def extract_rule_ids_from_file(content):
         pass
     return ids
 
-def get_ids_in_main():
-    result = subprocess.run(["git", "ls-tree", "-r", "origin/main", "--name-only"], capture_output=True, text=True, check=True)
-    xml_files = [f for f in result.stdout.splitlines() if f.startswith("rules/") and f.endswith(".xml")]
-
+def get_rule_ids_in_files(files):
     ids = set()
-    for path in xml_files:
-        show = subprocess.run(["git", "show", f"origin/main:{path}"], capture_output=True, text=True)
-        ids.update(extract_rule_ids_from_file(show.stdout))
-    return ids
-
-def get_ids_in_pr():
-    ids = set()
-    for path in Path("rules").glob("*.xml"):
+    for path in files:
         try:
             content = path.read_text()
-            ids.update(extract_rule_ids_from_file(content))
-        except Exception:
-            continue
+            ids.update(extract_rule_ids_from_xml(content))
+        except Exception as e:
+            print(f"⚠️ Could not read {path}: {e}")
     return ids
 
-def main():
-    pr_ids = get_ids_in_pr()
+def get_all_main_rule_ids():
+    """Get all rule IDs from the rules/*.xml files in origin/main."""
     subprocess.run(["git", "fetch", "origin", "main"], check=True)
-    main_ids = get_ids_in_main()
-    conflicts = pr_ids & main_ids
+    result = subprocess.run(
+        ["git", "ls-tree", "-r", "origin/main", "--name-only"],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    xml_files = [
+        f for f in result.stdout.splitlines()
+        if f.startswith("rules/") and f.endswith(".xml")
+    ]
+
+    all_ids = set()
+    for file in xml_files:
+        show = subprocess.run(
+            ["git", "show", f"origin/main:{file}"],
+            capture_output=True,
+            text=True,
+        )
+        all_ids.update(extract_rule_ids_from_xml(show.stdout))
+    return all_ids
+
+def main():
+    changed_files = get_changed_rule_files()
+    if not changed_files:
+        print("✅ No rule files were changed in this PR.")
+        return
+
+    print(f"🔍 Checking these files for conflicts: {[f.name for f in changed_files]}")
+
+    changed_ids = get_rule_ids_in_files(changed_files)
+    main_ids = get_all_main_rule_ids()
+    conflicts = changed_ids & main_ids
 
     if conflicts:
         print(f"❌ Conflicting rule IDs: {sorted(conflicts)}")

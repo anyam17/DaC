@@ -1,3 +1,4 @@
+
 # Ignore the following files
 
 client.keys
@@ -13,3 +14,4 @@ sslmanager.key
 lists/
 rootcheck/
 shared/
+

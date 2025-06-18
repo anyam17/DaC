@@ -1,0 +1,37 @@
+<group name="malware,">
+
+<!-- Data exfiltration -->
+  <rule id="100113" level="11">
+    <decoded_as>macOS_ddaolimaki-daunito</decoded_as>
+    <field name="executable_url" type="pcre2">.*Finder</field>
+    <field name="sender_identity" type="pcre2">.*</field>
+    <description>FrigidStealer malware (ddaolimaki-daunito) is attempting to use Apple Events, potentially for unauthorized inter-process communication or data exfiltration.</description>
+    <mitre>
+      <id>T1543</id>
+      <id>T1055</id>
+      <id>T1559</id>
+    </mitre>
+  </rule>
+
+<!-- Process termination -->
+  <rule id="100104" level="11">
+    <match type="pcre2">(?i)Removed job for.*ddaolimaki.*</match>
+    <description>FrigidStealer malware process terminated after data exfiltration.</description>
+    <mitre>
+      <id>T1489</id>
+    </mitre>
+  </rule>
+
+<!-- Persistence -->
+  <rule id="100105" level="11">
+    <decoded_as>macOS_launchservicesd</decoded_as>
+    <match type="pcre2">(?i)(?i)"LSBundlePath"="(.*Safari Updater.app)"</match>
+    <field name="application_type" type="pcre2">Foreground</field>
+    <field name="bundle_id" type="pcre2">com.wails.ddaolimaki-daunito</field>
+    <description>Possible FrigidStealer malware running in $(application_type)</description>
+    <mitre>
+      <id>T1541</id>
+    </mitre>
+  </rule>
+
+</group>

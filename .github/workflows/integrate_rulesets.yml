@@ -10,7 +10,7 @@ jobs:
   DaaC:
     runs-on: ubuntu-latest
     steps:
-      - name: Apply modified or new decoder and rule file(s) to SIEM
+      - name: Apply modified or new decoders and rules to SIEM
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.HOST }}

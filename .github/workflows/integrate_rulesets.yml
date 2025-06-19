@@ -1,4 +1,4 @@
-name: CI
+name: UPDATE SIEM WITH RULESETS
 on:
   push:
     branches: [ "main" ]
@@ -26,4 +26,5 @@ jobs:
             sudo systemctl restart wazuh-manager \
             && echo "Ruleset apply SUCCESS!!! - Wazuh manager restarted successfully." \
             || echo "Ruleset apply FAILURE!!! - Wazuh manager failed to restart, check ruleset for error..."
+            sudo systemctl status -l wazuh-manager
             '

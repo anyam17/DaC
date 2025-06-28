@@ -73,17 +73,38 @@ def main():
         print("✅ No rule files were changed in this PR.")
         return
 
+    # print(f"🔍 Checking these files for conflicts: {[f.name for f in changed_files]}")
+
+    # changed_ids = get_rule_ids_in_files(changed_files)
+    # main_ids = get_all_main_rule_ids()
+    # conflicts = changed_ids & main_ids
+
+    # if conflicts:
+    #     print(f"❌ Conflicting rule IDs: {sorted(conflicts)}")
+    #     sys.exit(1)
+    # else:
+    #     print("✅ No rule ID conflicts.")
+
     print(f"🔍 Checking these files for conflicts: {[f.name for f in changed_files]}")
-
-    changed_ids = get_rule_ids_in_files(changed_files)
     main_ids = get_all_main_rule_ids()
-    conflicts = changed_ids & main_ids
 
-    if conflicts:
-        print(f"❌ Conflicting rule IDs: {sorted(conflicts)}")
-        sys.exit(1)
-    else:
-        print("✅ No rule ID conflicts.")
+    # Loop through each changed file and check for ID conflicts
+    for path in changed_files:
+        print(f"\n🔎 Checking file: {path.name}")
+        try:
+            content = path.read_text()
+            file_ids = extract_rule_ids_from_xml(content)
+        except Exception as e:
+            print(f"⚠️ Could not read {path.name}: {e}")
+            continue
+        conflicts = file_ids & main_ids
+        if conflicts:
+            print(f"❌ Conflicting rule IDs in {path.name} file. Rule IDs: {sorted(conflicts)}")
+            sys.exit(1)
+        else:
+            print(f"✅ No rule ID conflicts in {path.name}.")
+
+    print("\n✅ All checked files are conflict-free.")
 
 if __name__ == "__main__":
     main()

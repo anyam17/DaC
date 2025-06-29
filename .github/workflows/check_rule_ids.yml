@@ -3,7 +3,7 @@ name: Check Rule ID Conflicts
 on:
   pull_request:
     branches: [ "main" ]
-    paths: ["**.xml"]
+    # paths: ["**.xml"]
 
 jobs:
   check-rule-ids:

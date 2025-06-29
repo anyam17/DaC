@@ -62,7 +62,7 @@ git push -u origin main
 
 Perform the following steps on your GitHub repository (remote repository) after pushing local changes:
 
-1. Edit the GitHub Actions workflow file `.github/workflows` > `automation.yml` to adapt it to your SIEM tool.
+1. Edit the GitHub Actions workflow file `.github/workflows` > `integrate_rulesets.yml` to adapt it to your SIEM tool.
 2. Navigate to **Settings** > **Secrets and variables** > **Actions** > **Secrets** to create the following repository secrets to be used by GitHub Actions:
 
 |**Name**     |**Secret**                     |
@@ -87,3 +87,98 @@ Create new or modify existing custom decoders in the `decoders` directory of the
 - ### Creating or Modifying Custom Rules
 Create new or modify existing custom rules in the `rules` directory of the repository. This may vary depending on the directory structure of your SIEM.
 
+# Workflows
+
+##  Rule ID Conflict Checker for Wazuh Rulesets
+
+- **Workflow:** [`.github/workflows/check_rule_ids.yml`](.github/workflows/check_rule_ids.yml)
+- **Script:** [`check_rule_ids.py`](check_rule_ids.py)
+- **Purpose:** This repository includes a GitHub Actions workflow and a Python script to **automatically check for rule ID conflicts** in Wazuh ruleset XML files (`rules/*.xml`) whenever a pull request is opened against the `main` branch. The workflow ensures that any new or modified rules in pull requests do **not reuse rule IDs** already present in the `main` branch, preventing accidental overwrites and maintaining ruleset integrity.
+
+---
+
+### How It Works
+
+1. **Trigger:** The workflow runs on every pull request to the `main` branch.
+
+2. **Steps:**
+   - Checks out the PR branch and fetches the latest `main` branch.
+   - Sets up Python 3.10.
+   - Runs [`check_rule_ids.py`](check_rule_ids.py), which:
+     - Finds all changed or added `rules/*.xml` files in the PR.
+     - Extracts all `<rule id="...">` values from these files.
+     - Extracts all rule IDs from `rules/*.xml` files in the `main` branch.
+     - Checks for any ID overlap (conflicts).
+     - Fails the workflow if any conflicts are found, listing the conflicting IDs and files.
+
+
+### Example Output
+
+```
+🔍 Checking these files for conflicts: ['local_rules.xml']
+
+🔎 Checking file: local_rules.xml
+✅ No rule ID conflicts in local_rules.xml.
+
+✅ All checked files are conflict-free.
+```
+
+If a conflict is found:
+
+```
+❌ Conflicting rule IDs in local_rules.xml file. Rule IDs: [100001]
+```
+
+### Troubleshooting
+
+- If you see a ❌ conflict, update your rule IDs to be unique compared to those in the `main` branch.
+
+
+## Wazuh Ruleset Integration Workflow
+
+- **Workflow file:** `.github/workflows/integrate_rulesets.yml`
+- **Purpose:** This repository includes a GitHub Actions workflow to **automatically update and apply Wazuh decoders and rules** on your SIEM server whenever changes are pushed to the `main` branch. On every push to `main` that modifies any `.xml` file (typically in `rules/` or `decoders/`), the workflow connects to your SIEM server via SSH and:
+  - Pulls the latest changes.
+  - Updates file permissions for decoders and rules.
+  - Restarts the Wazuh manager to apply the new rulesets.
+  - Prints the status of the Wazuh manager.
+
+---
+
+### How It Works
+
+1. **Trigger:**
+   - On push to `main` branch affecting any `.xml` file.
+   - Can also be run manually via the GitHub Actions UI (`workflow_dispatch`).
+
+2. **Steps:**
+   - Uses the [appleboy/ssh-action](https://github.com/appleboy/ssh-action) to SSH into your SIEM server.
+   - Runs a script that:
+     - Changes to `/var/ossec/etc/`
+     - Pulls the latest code from the `main` branch.
+     - Sets correct ownership and permissions for all decoders and rules.
+     - Restarts the Wazuh manager.
+     - Prints the status of the Wazuh manager service.
+
+### Security
+
+- SSH credentials (`HOST`, `USERNAME`, `SSH_KEY`, `PORT`) are stored as **GitHub Actions secrets** and never exposed in logs.
+- Only users with access to your repository and secrets can trigger this workflow.
+
+### Example Output
+
+```
+Ruleset apply SUCCESS!!! - Wazuh manager restarted successfully.
+<status output>
+```
+or
+```
+Ruleset apply FAILURE!!! - Wazuh manager failed to restart, check ruleset for error...
+<status output>
+```
+
+### Troubleshooting
+
+- If the workflow fails, check the Actions logs for error messages.
+- Ensure your SSH key and user have the necessary permissions on the SIEM server.
+- Make sure the SIEM server can pull from your repository (deploy keys, access rights, etc.).

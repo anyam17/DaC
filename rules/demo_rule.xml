@@ -26,3 +26,5 @@
     <description>Error removing "$(yara_scanned_file)". YARA rule: $(yara_rule)</description>
   </rule>
 </group>
+
+<!--  Wazuh encounters an error when deleting malware with a positive match -->

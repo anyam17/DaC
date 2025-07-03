@@ -21,6 +21,6 @@
   - extra_data - Any extra data
 -->
 
-<decoder name="local_decoder_example">
+<decoder name="local_decoder_exampl">
     <program_name>local_decoder_example</program_name>
 </decoder>

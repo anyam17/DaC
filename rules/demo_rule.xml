@@ -25,6 +25,12 @@
     <match type="pcre2">wazuh-yara: INFO - Error removing threat: </match>
     <description>Error removing "$(yara_scanned_file)". YARA rule: $(yara_rule)</description>
   </rule>
+
+  <rule id="100216" level="12">
+    <if_sid>100213</if_sid>
+    <match type="pcre2">wazuh-yara: INFO - Error removing threat: </match>
+    <description>Error removing "$(yara_scanned_file)". YARA rule: $(yara_rule)</description>
+  </rule>
 </group>
 
 <!--  Wazuh encounters an error when deleting malware with a positive match -->
